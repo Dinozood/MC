@@ -28,6 +28,7 @@ def main():
         cv2.imshow(WINDOW_NAME, whole_image)
         cv2.waitKey(FPS)
     cv2.waitKey(0)
+    DU.VIDEO.release()
     return 0
 
 
