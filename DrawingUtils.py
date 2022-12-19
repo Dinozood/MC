@@ -8,10 +8,13 @@ FRAME_HEIGHT = 500
 STEP = 2
 PATH_WIDTH = 2
 ROTATE_SCALE = 1
-# FPS = int(1000 / 30)
-FPS = 10
+FPS = int(1000 / 30)
+# FPS = 10
 WINDOW_NAME = "Whole Image"
 cv2.namedWindow(WINDOW_NAME)
+# fourcc = cv2.cv.CV_FOURCC()
+fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+VIDEO = cv2.VideoWriter('output.avi', fourcc, 30.0, (FRAME_HEIGHT, FRAME_WIDTH))
 
 
 def create_blank(width, height, rgb_color=(0, 0, 0)):
@@ -67,36 +70,46 @@ def place_forward(whole_image):
 
 
 def rotate_left(whole_image):
+    global VIDEO
     angle = 90 / (FPS * ROTATE_SCALE)
     counter = 90 / angle
     for count in range(int(counter)):
         whole_image = rotate_image(whole_image, -angle)
+        frame = get_frame(whole_image)
+        VIDEO.write(frame)
         cv2.imshow(WINDOW_NAME, whole_image)
         cv2.waitKey(FPS)
     return whole_image
 
 
 def rotate_right(whole_image):
+    global VIDEO
     angle = 90 / (FPS * ROTATE_SCALE)
     counter = 90 / angle
     for count in range(int(counter)):
         whole_image = rotate_image(whole_image, angle)
+        frame = get_frame(whole_image)
+        VIDEO.write(frame)
         cv2.imshow(WINDOW_NAME, whole_image)
         cv2.waitKey(FPS)
     return whole_image
 
 
 def keep_moving_forward(whole_image, seconds):
+    global VIDEO
     distance = seconds * FPS
     for step in range(int(distance)):
         _, whole_image = move_forward(whole_image)
         whole_image = place_forward(whole_image)
+        frame = get_frame(whole_image)
+        VIDEO.write(frame)
         cv2.imshow(WINDOW_NAME, whole_image)
         cv2.waitKey(FPS)
     return whole_image
 
 
 def keep_going(whole_image):
+    global VIDEO
     while True:
         if whole_image[353, 1][0] == 255 and \
                 whole_image[354, 1][0] == 255 and \
@@ -109,6 +122,7 @@ def keep_going(whole_image):
             whole_image = rotate_right(whole_image)
             break
         frame, whole_image = move_forward(whole_image)
+        VIDEO.write(frame)
         cv2.imshow(WINDOW_NAME, whole_image)
         cv2.waitKey(FPS)
     return whole_image
