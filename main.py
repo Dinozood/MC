@@ -2,6 +2,7 @@ from DrawingUtils import *
 import DrawingUtils as DU
 import time
 
+
 def main():
     whole_image = create_blank(DU.WHOLE_IMAGE_WIDTH, DU.WHOLE_IMAGE_HEIGHT)
     whole_image = place_forward(whole_image)
@@ -27,7 +28,7 @@ def main():
         _, whole_image = DU.move_forward(whole_image)
         cv2.imshow(WINDOW_NAME, whole_image)
         cv2.waitKey(FPS)
-    cv2.waitKey(0)
+    cv2.waitKey(100)
     DU.VIDEO.release()
     return 0
 

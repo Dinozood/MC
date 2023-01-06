@@ -13,8 +13,9 @@ FPS = int(1000 / 30)
 WINDOW_NAME = "Whole Image"
 cv2.namedWindow(WINDOW_NAME)
 # fourcc = cv2.cv.CV_FOURCC()
-fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-VIDEO = cv2.VideoWriter('output.avi', fourcc, 30.0, (FRAME_HEIGHT, FRAME_WIDTH))
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+# fourcc = cv2.VideoWriter_fourcc('H','2','6','4')
+VIDEO = cv2.VideoWriter('output.mp4', fourcc, 30.0, (FRAME_HEIGHT, FRAME_WIDTH))
 
 
 def create_blank(width, height, rgb_color=(0, 0, 0)):
