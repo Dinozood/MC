@@ -8,6 +8,8 @@
 #include "OwnFunctions.h"
 
 uint32_t GLOBAL_WAIT = 0;
+uint32_t GLOBAL_WAIT_R = 0;
+
 
 void SetupClocks(){
 	//	Enable co-processors | not really nesseceary in this project, but I let that as is.
@@ -56,18 +58,16 @@ void SetupGPIO() {
 	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN | RCC_AHB1ENR_GPIOCEN;
 	RCC->AHB1ENR |= 133;
 	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
-//	RCC->AHB1ENR |= (1<<0);  // Enable GPIO Clock
 	GPIOA->MODER |= (2<<10)|(2<<12)|(2<<14)|(0b01010101 << 16);  // Alternate functions for PA5, PA6, PA7 and Output for PA9
 	GPIOA->OSPEEDR |= (3<<10)|(3<<12)|(3<<14)|(3<<18)|(0xFF << 16);  // VERY HIGH Speed for PA5, PA6, PA7, PA9
-	GPIOA->OSPEEDR = 201391104;
+//	GPIOA->OSPEEDR = 201391104;
 
 	GPIOC->MODER |= (0b01 << 26);
-	GPIOC->OTYPER |= (1 << 13);
-//	GPIOC->OSPEEDR |= (3<<26);
+	GPIOC->OSPEEDR |= (3<<26);
 
 	GPIOA->AFR[0] |= (5<<20)|(5<<24)|(5<<28);   // AF5(SPI1) for PA5, PA6, PA7
-	GPIOA->AFR[0] = 1431306240;
-//	GPIOC->IDR = 57344;
+//	GPIOA->AFR[0] = 1431306240;
+	GPIOC->ODR |= (1<<13); //На блэк пилл это почему-то выключает C13
 }
 
 void SetupSPI() {
@@ -134,7 +134,7 @@ void USART2_IRQHandler(void){
 }
 
 void SetupTimer(uint16_t milliseconds, uint32_t await){
-	GLOBAL_WAIT = await;
+	GLOBAL_WAIT_R = await;
 	RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
 	TIM2->PSC = 41999;
 	TIM2->ARR = 1000*2;
@@ -146,13 +146,27 @@ void TIM2_IRQHandler() {
   if(TIM2->SR & TIM_SR_UIF) {
     TIM2->SR &= ~TIM_SR_UIF; // clear interrupt of the timer
   }
-  ++GLOBAL_WAIT;
-  if (GLOBAL_WAIT > 9){
-	  GPIOC->ODR ^= (1<<13);
+  if (GLOBAL_WAIT >= GLOBAL_WAIT_R){
+	  GPIOC->ODR &= ~(1<<13);
+	  GPIOA->ODR &= ~(0xFF<<8);
   }
-//  TIM2->CR1 |= 1;
+  ++GLOBAL_WAIT;
 }
 
 void clearTimer(){
+
 	GLOBAL_WAIT = 0;
+	GPIOC->ODR |= (1<<13);
 }
+
+
+
+
+
+
+
+
+
+
+
+
