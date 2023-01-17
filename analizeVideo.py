@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import time
 import spidev
 #//			GPIOA->ODR ^= (2 << 8); // for right 10 is backward, so 01 is forward;
 #//			GPIOA->ODR ^= (2 << 10); // same for left
@@ -10,6 +11,7 @@ state = None
 
 class Analiser:
     def __init__(self):
+        pass
         self.spi = spidev.SpiDev()
         self.spi.open(0, 0)
         self.spi.max_speed_hz = 1 * (10 ** 6)
@@ -19,27 +21,27 @@ class Analiser:
 
     def say_forward(self):
         global state
-        if state is not "forward":
+        to_send = [1, 1]
+        self.spi.xfer(to_send)
+        if state != "forward":
             state = "forward"
             print("forward")
-            to_send = [1, 1]
-            self.spi.xfer(to_send)
 
     def say_left(self):
         global state
-        if state is not "left":
+        to_send = [2, 1]
+        self.spi.xfer(to_send)
+        if state != "left":
             state = "left"
             print("left")
-            to_send = [2, 1]
-            self.spi.xfer(to_send)
 
     def say_right(self):
         global state
-        if state is not "right":
+        to_send = [1, 2]
+        self.spi.xfer(to_send)
+        if state != "right":
             state = "right"
             print("right")
-            to_send = [1, 2]
-            self.spi.xfer(to_send)
 
     def go_forward(self):
         self.say_forward()
@@ -50,7 +52,8 @@ class Analiser:
             ret, frame = cap.read()
             if ret:
                 # Display the resulting frame
-                cv2.imshow('Frame', frame)
+                # cv2.imshow('Frame', frame)
+                time.sleep(0.033)
                 cv2.waitKey(25)
                 tmp = frame[0][250:252, 0]
                 sum = tmp[0] + tmp[1]
@@ -64,7 +67,9 @@ class Analiser:
             ret, frame = cap.read()
             if ret:
                 # Display the resulting frame
-                cv2.imshow('Frame', frame)
+                # cv2.imshow('F
+                # rame', frame)
+                time.sleep(0.033)
                 cv2.waitKey(25)
                 tmp = frame[0][250:252, 0]
                 sum = int(tmp[0]) + int(tmp[1])
@@ -78,7 +83,7 @@ class Analiser:
             ret, frame = cap.read()
             if ret:
                 # Display the resulting frame
-                cv2.imshow('Frame', frame)
+#                 # cv2.imshow('Frame', frame)
                 tmp = frame[0][250:252, 0]
                 sum = int(tmp[0]) + int(tmp[1])
                 if sum > 150:
@@ -92,11 +97,11 @@ class Analiser:
                     sum_l = tmp_l[0] + tmp_l[1]
                     if sum_l > 150:
                         self.rotate_left(cap)
-                if state is not "forward":
-                    state = "forward"
-                    print("forward")
+                self.go_forward()
                 # Press Q on keyboard to  exit
-                if cv2.waitKey(25) & 0xFF == ord('q'):
+
+                time.sleep(0.033)
+                if cv2.waitKey(25000) & 0xFF == ord('q'):
                     break
             else:
                 break
@@ -105,7 +110,9 @@ class Analiser:
 
 def main():
     visor = Analiser()
-    cap = cv2.VideoCapture("/home/dinozood/Projects/IFMO/MC/output.avi")
+    cap = cv2.VideoCapture("/home/pi/Projects/MC/output.avi")
+    # cap = cv2.VideoCapture("/home/dinozood/Projects/IFMO/MC/output.avi")
+
     if not cap.isOpened():
         print("Error opening video stream or file")
 
