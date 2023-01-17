@@ -10,10 +10,9 @@ int main(void) {
 
 	NVIC_EnableIRQ(TIM2_IRQn);
 	uint8_t buf[BUFFER_SIZE] = {0};
-	uint8_t cmd = 0;
+	uint32_t cmd = 0;
     TIM2->CR1 |= 1;
     /* Loop forever */
-
 	for(;;){
 		SPI_Receive(&buf, BUFFER_SIZE);
 		cmd = ( ( (buf[1]&0x3) << 2) | (buf[0]&0x3) ) << 8;
