@@ -1,10 +1,3 @@
-/*
- * OwnFunctions.c
- *
- *  Created on: Jan 16, 2023
- *      Author: dinozood
- */
-
 #include "OwnFunctions.h"
 
 uint32_t GLOBAL_WAIT = 0;
